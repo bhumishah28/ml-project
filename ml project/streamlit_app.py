@@ -260,42 +260,42 @@ def main():
     """, unsafe_allow_html=True)
 
     # Header
-    st.markdown("# 👥 Employee Attrition Risk Scorer")
+    st.markdown("# Employee Attrition Risk Scorer")
     st.markdown("**Predict employee attrition risk using machine learning. Minimal input required.**")
 
     # Sidebar: Model Management
     with st.sidebar:
-        st.header("⚙️ Model Configuration")
+        st.header("Model Configuration")
         
-        uploaded = st.file_uploader("📁 Upload Dataset (CSV)", type=["csv"], help="Optional: Upload a custom employee dataset")
+        uploaded = st.file_uploader("Upload Dataset (CSV)", type=["csv"], help="Optional: Upload a custom employee dataset")
         
         if uploaded is not None:
             df = pd.read_csv(uploaded)
-            st.success("✅ Dataset loaded from upload")
+            st.success("Dataset loaded from upload")
         else:
             df = load_data()
             if df is not None:
-                st.info(f"📊 Loaded project dataset: {df.shape[0]} employees")
+                st.info(f"Loaded project dataset: {df.shape[0]} employees")
 
         if df is None:
-            st.error("❌ No dataset found. Please upload `employee_attrition_dataset.csv`")
+            st.error("No dataset found. Please upload `employee_attrition_dataset.csv`")
             return
 
         st.divider()
         
         # Train/Retrain button
         col1, col2 = st.columns(2)
-        retrain = col1.button("🔄 Retrain Model", use_container_width=True)
-        show_perf = col2.button("📈 Model Stats", use_container_width=True)
+        retrain = col1.button("Retrain Model", use_container_width=True)
+        show_perf = col2.button("Model Stats", use_container_width=True)
         
         if retrain:
-            with st.spinner("🚀 Training model..."):
+            with st.spinner("Training model..."):
                 meta = train_model(df)
             st.session_state['meta'] = meta
-            st.success(f"✅ Model trained! ROC-AUC: {meta['auc']:.1%}")
+            st.success(f"Model trained. ROC-AUC: {meta['auc']:.1%}")
         else:
             if 'meta' not in st.session_state:
-                with st.spinner("🚀 Training model on first load..."):
+                with st.spinner("Training model on first load..."):
                     st.session_state['meta'] = train_model(df)
 
         meta = st.session_state['meta']
@@ -309,7 +309,7 @@ def main():
         """)
 
     # Main content with tabs
-    tab1, tab2 = st.tabs(["🎯 Single Prediction", "📊 Batch Analysis"])
+    tab1, tab2 = st.tabs(["Single Prediction", "Batch Analysis"])
 
     # TAB 1: Single Prediction
     with tab1:
@@ -319,19 +319,19 @@ def main():
         col1, col2, col3 = st.columns(3)
         with col1:
             age = st.number_input(
-                "👤 Age", 
+                "Age", 
                 min_value=16, max_value=100, value=30,
                 help="Employee age in years"
             )
         with col2:
             monthly_income = st.number_input(
-                "💰 Monthly Income", 
+                "Monthly Income", 
                 min_value=0, value=3000,
                 help="Monthly salary in USD"
             )
         with col3:
             job_level = st.number_input(
-                "📊 Job Level", 
+                "Job Level", 
                 min_value=0, max_value=5, value=1,
                 help="Career level (1=Entry to 5=Executive)"
             )
@@ -339,19 +339,19 @@ def main():
         col1, col2, col3 = st.columns(3)
         with col1:
             years_at_company = st.number_input(
-                "📅 Years at Company", 
+                "Years at Company", 
                 min_value=0, max_value=50, value=2,
                 help="Tenure in years"
             )
         with col2:
             overtime = st.selectbox(
-                "⏰ Overtime", 
+                "Overtime", 
                 options=["No", "Yes"],
                 help="Works overtime regularly?"
             ) if 'Overtime' in df.columns else "No"
         with col3:
             distance = st.number_input(
-                "🏠 Distance From Home", 
+                "Distance From Home", 
                 min_value=0, max_value=100, value=5,
                 help="Commute distance in miles"
             ) if 'Distance_From_Home' in df.columns else 0
@@ -359,7 +359,7 @@ def main():
         # Prediction Button
         pred_col1, pred_col2 = st.columns([1, 3])
         with pred_col1:
-            if st.button("🔮 Predict Risk", use_container_width=True, type="primary"):
+            if st.button("Predict Risk", use_container_width=True, type="primary"):
                 example = {
                     'Age': age,
                     'Monthly_Income': monthly_income if 'Monthly_Income' in df.columns else 3000,
@@ -385,17 +385,17 @@ def main():
             
             with col2:
                 if proba >= 0.6:
-                    risk_level = "🔴 HIGH RISK"
+                    risk_level = "HIGH RISK"
                     st.markdown(f'<p class="risk-high">{risk_level}</p>', unsafe_allow_html=True)
-                    st.warning("⚠️ This employee has a **high** probability of leaving. Consider retention strategies.")
+                    st.warning("This employee has a **high** probability of leaving. Consider retention strategies.")
                 elif proba >= 0.4:
-                    risk_level = "🟠 MEDIUM RISK"
+                    risk_level = "MEDIUM RISK"
                     st.markdown(f'<p class="risk-medium">{risk_level}</p>', unsafe_allow_html=True)
-                    st.info("💡 This employee shows moderate attrition risk. Monitor engagement.")
+                    st.info("This employee shows moderate attrition risk. Monitor engagement.")
                 else:
-                    risk_level = "🟢 LOW RISK"
+                    risk_level = "LOW RISK"
                     st.markdown(f'<p class="risk-low">{risk_level}</p>', unsafe_allow_html=True)
-                    st.success("✅ This employee is likely to stay.")
+                    st.success("This employee is likely to stay.")
             
             # Risk gauge visualization
             st.progress(proba, text=f"Risk Score: {proba:.1%}")
@@ -405,12 +405,12 @@ def main():
         st.subheader("Predict Risk for Multiple Employees")
         st.markdown("Upload a CSV with employee data to get predictions for all employees at once.")
         
-        batch_file = st.file_uploader("📁 Upload employee CSV for batch analysis", type=["csv"], key="batch")
+    batch_file = st.file_uploader("Upload employee CSV for batch analysis", type=["csv"], key="batch")
         
         if batch_file is not None:
             batch_df = pd.read_csv(batch_file)
             
-            if st.button("🚀 Analyze All Employees", use_container_width=True, type="primary"):
+            if st.button("Analyze All Employees", use_container_width=True, type="primary"):
                 try:
                     with st.spinner("Processing batch predictions..."):
                         batch_results = []
@@ -429,29 +429,29 @@ def main():
                         st.session_state['batch_results'] = results_df
 
                 except Exception as e:
-                    st.error(f"❌ Error during batch analysis: {str(e)}")
+                    st.error(f"Error during batch analysis: {str(e)}")
         
         if 'batch_results' in st.session_state:
             results_df = st.session_state['batch_results']
             
-            st.success(f"✅ Analyzed {len(results_df)} employees")
+            st.success(f"Analyzed {len(results_df)} employees")
             
             col1, col2, col3 = st.columns(3)
             with col1:
                 high_risk = (results_df['Risk_Level'] == 'HIGH').sum()
-                st.metric("🔴 High Risk", high_risk)
+                st.metric("High Risk", high_risk)
             with col2:
                 med_risk = (results_df['Risk_Level'] == 'MEDIUM').sum()
-                st.metric("🟠 Medium Risk", med_risk)
+                st.metric("Medium Risk", med_risk)
             with col3:
                 low_risk = (results_df['Risk_Level'] == 'LOW').sum()
-                st.metric("🟢 Low Risk", low_risk)
+                st.metric("Low Risk", low_risk)
             
             st.dataframe(results_df, use_container_width=True)
             
             csv = results_df.to_csv(index=False)
             st.download_button(
-                "💾 Download Predictions (CSV)",
+                "Download Predictions (CSV)",
                 csv,
                 "attrition_predictions.csv",
                 "text/csv",
@@ -461,7 +461,7 @@ def main():
     # Footer
     st.divider()
     st.caption(
-        "🤖 **Employee Attrition Risk Scorer** | "
+    "**Employee Attrition Risk Scorer** | "
         "Built with Random Forest ML | "
         "For HR decision support only"
     )
